@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  passwordHash     String
+  name             String?
+  avatar           String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  subscriptions    Subscription[]
+  episodePurchases EpisodePurchase[]
+  watchHistory     WatchHistory[]
+  adImpressions    AdImpression[]
+  payments         Payment[]
+}
+
+model Series {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  image       String?
+  tags        String?
+  type        String?
+  views       Int       @default(0)
+  status      String
+  isExclusive Boolean   @default(false)
+  hasAds      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  episodes    Episode[]
+}
+
+model Episode {
+  id               String            @id @default(uuid())
+  seriesId         String
+  episodeNumber    Int
+  title            String
+  videoUrl         String
+  thumbnailUrl     String?
+  duration         Int
+  status           String
+  isExclusive      Boolean?
+  hasAds           Boolean?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  series           Series            @relation(fields: [seriesId], references: [id])
+  episodePurchases EpisodePurchase[]
+  watchHistory     WatchHistory[]
+  adImpressions    AdImpression[]
+
+  @@unique([seriesId, episodeNumber])
+  @@index([seriesId])
+}
+
+model Plan {
+  id            String         @id @default(uuid())
+  name          String
+  price         Decimal
+  currency      String
+  durationDays  Int
+  isActive      Boolean        @default(true)
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id      String   @id @default(uuid())
+  userId  String
+  planId  String
+  startAt DateTime
+  endAt   DateTime
+  status  String
+  user    User     @relation(fields: [userId], references: [id])
+  plan    Plan     @relation(fields: [planId], references: [id])
+
+  @@index([userId])
+  @@index([planId])
+}
+
+model EpisodePurchase {
+  id          String   @id @default(uuid())
+  userId      String
+  episodeId   String
+  price       Decimal
+  currency    String
+  purchasedAt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  episode     Episode  @relation(fields: [episodeId], references: [id])
+
+  @@unique([userId, episodeId])
+  @@index([episodeId])
+}
+
+model WatchHistory {
+  id            String   @id @default(uuid())
+  userId        String
+  episodeId     String
+  progress      Int
+  lastWatchedAt DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  episode       Episode  @relation(fields: [episodeId], references: [id])
+
+  @@unique([userId, episodeId])
+  @@index([episodeId])
+}
+
+model AdUnit {
+  id             String         @id @default(uuid())
+  name           String
+  googleAdUnitId String
+  placement      String
+  isActive       Boolean        @default(true)
+  adImpressions  AdImpression[]
+}
+
+model AdImpression {
+  id           String   @id @default(uuid())
+  userId       String?
+  episodeId    String?
+  adUnitId     String
+  impressionAt DateTime @default(now())
+  device       String?
+  country      String?
+  user         User?    @relation(fields: [userId], references: [id])
+  episode      Episode? @relation(fields: [episodeId], references: [id])
+  adUnit       AdUnit   @relation(fields: [adUnitId], references: [id])
+
+  @@index([userId])
+  @@index([episodeId])
+  @@index([adUnitId])
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  userId    String
+  amount    Decimal
+  currency  String
+  method    String
+  status    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Setting {
+  key   String @id
+  value String
+}
