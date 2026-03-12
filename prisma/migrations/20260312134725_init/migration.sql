@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `User` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `email` VARCHAR(191) NOT NULL,
     `passwordHash` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NULL,
@@ -14,29 +14,30 @@ CREATE TABLE `User` (
 
 -- CreateTable
 CREATE TABLE `Series` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
-    `slug` VARCHAR(191) NOT NULL,
     `description` VARCHAR(191) NULL,
-    `coverImage` VARCHAR(191) NULL,
-    `bannerImage` VARCHAR(191) NULL,
+    `image` VARCHAR(191) NULL,
+    `tags` VARCHAR(191) NULL,
+    `type` VARCHAR(191) NULL,
+    `views` INTEGER NOT NULL DEFAULT 0,
     `status` VARCHAR(191) NOT NULL,
     `isExclusive` BOOLEAN NOT NULL DEFAULT false,
     `hasAds` BOOLEAN NOT NULL DEFAULT true,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    UNIQUE INDEX `Series_slug_key`(`slug`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Episode` (
-    `id` VARCHAR(191) NOT NULL,
-    `seriesId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `seriesId` INTEGER NOT NULL,
     `episodeNumber` INTEGER NOT NULL,
     `title` VARCHAR(191) NOT NULL,
     `videoUrl` VARCHAR(191) NOT NULL,
+    `thumbnailUrl` VARCHAR(191) NULL,
     `duration` INTEGER NOT NULL,
     `status` VARCHAR(191) NOT NULL,
     `isExclusive` BOOLEAN NULL,
@@ -51,7 +52,7 @@ CREATE TABLE `Episode` (
 
 -- CreateTable
 CREATE TABLE `Plan` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `price` DECIMAL(65, 30) NOT NULL,
     `currency` VARCHAR(191) NOT NULL,
@@ -63,9 +64,9 @@ CREATE TABLE `Plan` (
 
 -- CreateTable
 CREATE TABLE `Subscription` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `planId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `planId` INTEGER NOT NULL,
     `startAt` DATETIME(3) NOT NULL,
     `endAt` DATETIME(3) NOT NULL,
     `status` VARCHAR(191) NOT NULL,
@@ -77,9 +78,9 @@ CREATE TABLE `Subscription` (
 
 -- CreateTable
 CREATE TABLE `EpisodePurchase` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `episodeId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `episodeId` INTEGER NOT NULL,
     `price` DECIMAL(65, 30) NOT NULL,
     `currency` VARCHAR(191) NOT NULL,
     `purchasedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -91,9 +92,9 @@ CREATE TABLE `EpisodePurchase` (
 
 -- CreateTable
 CREATE TABLE `WatchHistory` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
-    `episodeId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `episodeId` INTEGER NOT NULL,
     `progress` INTEGER NOT NULL,
     `lastWatchedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -104,7 +105,7 @@ CREATE TABLE `WatchHistory` (
 
 -- CreateTable
 CREATE TABLE `AdUnit` (
-    `id` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `googleAdUnitId` VARCHAR(191) NOT NULL,
     `placement` VARCHAR(191) NOT NULL,
@@ -115,10 +116,10 @@ CREATE TABLE `AdUnit` (
 
 -- CreateTable
 CREATE TABLE `AdImpression` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NULL,
-    `episodeId` VARCHAR(191) NULL,
-    `adUnitId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NULL,
+    `episodeId` INTEGER NULL,
+    `adUnitId` INTEGER NOT NULL,
     `impressionAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `device` VARCHAR(191) NULL,
     `country` VARCHAR(191) NULL,
@@ -131,8 +132,8 @@ CREATE TABLE `AdImpression` (
 
 -- CreateTable
 CREATE TABLE `Payment` (
-    `id` VARCHAR(191) NOT NULL,
-    `userId` VARCHAR(191) NOT NULL,
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
     `amount` DECIMAL(65, 30) NOT NULL,
     `currency` VARCHAR(191) NOT NULL,
     `method` VARCHAR(191) NOT NULL,

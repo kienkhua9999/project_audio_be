@@ -16,14 +16,14 @@ export class AdUnitsService {
   }
 
   findOne(id: string) {
-    return this.prisma.adUnit.findUnique({ where: { id } });
+    return this.prisma.adUnit.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdateAdUnitDto) {
-    return this.prisma.adUnit.update({ where: { id }, data });
+    return this.prisma.adUnit.update({ where: { id: Number(id) }, data });
   }
 
   remove(id: string) {
-    return this.prisma.adUnit.delete({ where: { id } });
+    return this.prisma.adUnit.delete({ where: { id: Number(id) } });
   }
 }

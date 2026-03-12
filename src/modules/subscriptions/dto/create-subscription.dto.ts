@@ -1,6 +1,6 @@
 export class CreateSubscriptionDto {
-  userId: string;
-  planId: string;
+  userId: number;
+  planId: number;
   startAt: string;
   endAt: string;
   status: string;

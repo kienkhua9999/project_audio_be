@@ -22,12 +22,12 @@ export class SubscriptionsService {
   }
 
   findOne(id: string) {
-    return this.prisma.subscription.findUnique({ where: { id } });
+    return this.prisma.subscription.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdateSubscriptionDto) {
     return this.prisma.subscription.update({
-      where: { id },
+      where: { id: Number(id) },
       data: {
         ...data,
         ...(data.startAt ? { startAt: new Date(data.startAt) } : {}),
@@ -37,6 +37,6 @@ export class SubscriptionsService {
   }
 
   remove(id: string) {
-    return this.prisma.subscription.delete({ where: { id } });
+    return this.prisma.subscription.delete({ where: { id: Number(id) } });
   }
 }

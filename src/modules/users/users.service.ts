@@ -16,14 +16,14 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdateUserDto) {
-    return this.prisma.user.update({ where: { id }, data });
+    return this.prisma.user.update({ where: { id: Number(id) }, data });
   }
 
   remove(id: string) {
-    return this.prisma.user.delete({ where: { id } });
+    return this.prisma.user.delete({ where: { id: Number(id) } });
   }
 }

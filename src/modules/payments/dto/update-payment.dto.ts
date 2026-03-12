@@ -1,5 +1,5 @@
 export class UpdatePaymentDto {
-  userId?: string;
+  userId?: number;
   amount?: number;
   currency?: string;
   method?: string;

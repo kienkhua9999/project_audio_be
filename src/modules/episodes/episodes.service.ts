@@ -12,12 +12,38 @@ export class EpisodesService {
   }
 
   findAll() {
-    return this.prisma.episode.findMany({ orderBy: { createdAt: 'desc' } });
+    return this.prisma.episode.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        series: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            image: true,
+            tags: true,
+            views: true,
+            episodes: {
+              select: {
+                id: true,
+                episodeNumber: true,
+                title: true,
+                duration: true,
+                thumbnailUrl: true,
+              },
+              orderBy: {
+                episodeNumber: 'asc',
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async findOne(id: string) {
-    const episode = await this.prisma.episode.findUnique({
-      where: { id },
+    const episode = await this.prisma.episode.findFirst({
+      where: { id: Number(id) },
       include: {
         series: {
           include: {
@@ -90,10 +116,10 @@ export class EpisodesService {
   }
 
   update(id: string, data: UpdateEpisodeDto) {
-    return this.prisma.episode.update({ where: { id }, data });
+    return this.prisma.episode.update({ where: { id: Number(id) }, data });
   }
 
   remove(id: string) {
-    return this.prisma.episode.delete({ where: { id } });
+    return this.prisma.episode.delete({ where: { id: Number(id) } });
   }
 }

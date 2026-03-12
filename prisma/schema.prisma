@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id               String            @id @default(uuid())
+  id               Int               @id @default(autoincrement())
   email            String            @unique
   passwordHash     String
   name             String?
@@ -23,7 +23,7 @@ model User {
 }
 
 model Series {
-  id          String    @id @default(uuid())
+  id          Int       @id @default(autoincrement())
   title       String
   description String?
   image       String?
@@ -39,8 +39,8 @@ model Series {
 }
 
 model Episode {
-  id               String            @id @default(uuid())
-  seriesId         String
+  id               Int               @id @default(autoincrement())
+  seriesId         Int
   episodeNumber    Int
   title            String
   videoUrl         String
@@ -61,7 +61,7 @@ model Episode {
 }
 
 model Plan {
-  id            String         @id @default(uuid())
+  id            Int            @id @default(autoincrement())
   name          String
   price         Decimal
   currency      String
@@ -71,9 +71,9 @@ model Plan {
 }
 
 model Subscription {
-  id      String   @id @default(uuid())
-  userId  String
-  planId  String
+  id      Int      @id @default(autoincrement())
+  userId  Int
+  planId  Int
   startAt DateTime
   endAt   DateTime
   status  String
@@ -85,9 +85,9 @@ model Subscription {
 }
 
 model EpisodePurchase {
-  id          String   @id @default(uuid())
-  userId      String
-  episodeId   String
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  episodeId   Int
   price       Decimal
   currency    String
   purchasedAt DateTime @default(now())
@@ -99,9 +99,9 @@ model EpisodePurchase {
 }
 
 model WatchHistory {
-  id            String   @id @default(uuid())
-  userId        String
-  episodeId     String
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  episodeId     Int
   progress      Int
   lastWatchedAt DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id])
@@ -112,7 +112,7 @@ model WatchHistory {
 }
 
 model AdUnit {
-  id             String         @id @default(uuid())
+  id             Int            @id @default(autoincrement())
   name           String
   googleAdUnitId String
   placement      String
@@ -121,10 +121,10 @@ model AdUnit {
 }
 
 model AdImpression {
-  id           String   @id @default(uuid())
-  userId       String?
-  episodeId    String?
-  adUnitId     String
+  id           Int      @id @default(autoincrement())
+  userId       Int?
+  episodeId    Int?
+  adUnitId     Int
   impressionAt DateTime @default(now())
   device       String?
   country      String?
@@ -138,8 +138,8 @@ model AdImpression {
 }
 
 model Payment {
-  id        String   @id @default(uuid())
-  userId    String
+  id        Int      @id @default(autoincrement())
+  userId    Int
   amount    Decimal
   currency  String
   method    String

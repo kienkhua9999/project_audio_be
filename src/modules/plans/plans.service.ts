@@ -16,14 +16,14 @@ export class PlansService {
   }
 
   findOne(id: string) {
-    return this.prisma.plan.findUnique({ where: { id } });
+    return this.prisma.plan.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdatePlanDto) {
-    return this.prisma.plan.update({ where: { id }, data });
+    return this.prisma.plan.update({ where: { id: Number(id) }, data });
   }
 
   remove(id: string) {
-    return this.prisma.plan.delete({ where: { id } });
+    return this.prisma.plan.delete({ where: { id: Number(id) } });
   }
 }

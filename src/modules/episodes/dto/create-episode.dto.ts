@@ -1,5 +1,5 @@
 export class CreateEpisodeDto {
-  seriesId: string;
+  seriesId: number;
   episodeNumber: number;
   title: string;
   videoUrl: string;

@@ -1,6 +1,6 @@
 export class CreateEpisodePurchaseDto {
-  userId: string;
-  episodeId: string;
+  userId: number;
+  episodeId: number;
   price: number;
   currency: string;
 }

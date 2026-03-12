@@ -1,7 +1,7 @@
 export class UpdateAdImpressionDto {
-  userId?: string;
-  episodeId?: string;
-  adUnitId?: string;
+  userId?: number;
+  episodeId?: number;
+  adUnitId?: number;
   impressionAt?: string;
   device?: string;
   country?: string;

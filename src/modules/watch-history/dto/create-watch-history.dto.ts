@@ -1,6 +1,6 @@
 export class CreateWatchHistoryDto {
-  userId: string;
-  episodeId: string;
+  userId: number;
+  episodeId: number;
   progress: number;
   lastWatchedAt?: string;
 }

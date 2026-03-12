@@ -25,12 +25,12 @@ export class WatchHistoryService {
   }
 
   findOne(id: string) {
-    return this.prisma.watchHistory.findUnique({ where: { id } });
+    return this.prisma.watchHistory.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdateWatchHistoryDto) {
     return this.prisma.watchHistory.update({
-      where: { id },
+      where: { id: Number(id) },
       data: {
         ...data,
         ...(data.lastWatchedAt
@@ -41,6 +41,6 @@ export class WatchHistoryService {
   }
 
   remove(id: string) {
-    return this.prisma.watchHistory.delete({ where: { id } });
+    return this.prisma.watchHistory.delete({ where: { id: Number(id) } });
   }
 }

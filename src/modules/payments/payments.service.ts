@@ -17,15 +17,15 @@ export class PaymentsService {
   }
 
   findOne(id: string) {
-    return this.prisma.payment.findUnique({ where: { id } });
+    return this.prisma.payment.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdatePaymentDto) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    return this.prisma.payment.update({ where: { id }, data: data as any });
+    return this.prisma.payment.update({ where: { id: Number(id) }, data: data as any });
   }
 
   remove(id: string) {
-    return this.prisma.payment.delete({ where: { id } });
+    return this.prisma.payment.delete({ where: { id: Number(id) } });
   }
 }

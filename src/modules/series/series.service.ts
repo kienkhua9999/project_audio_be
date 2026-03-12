@@ -90,7 +90,7 @@ export class SeriesService {
 
   async findOne(id: string) {
     const series = await this.prisma.series.findUnique({
-      where: { id },
+      where: { id: Number(id) },
       include: {
         episodes: {
           select: {
@@ -118,10 +118,10 @@ export class SeriesService {
   }
 
   update(id: string, data: UpdateSeriesDto) {
-    return this.prisma.series.update({ where: { id }, data });
+    return this.prisma.series.update({ where: { id: Number(id) }, data });
   }
 
   remove(id: string) {
-    return this.prisma.series.delete({ where: { id } });
+    return this.prisma.series.delete({ where: { id: Number(id) } });
   }
 }

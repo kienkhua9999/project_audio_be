@@ -25,12 +25,12 @@ export class AdImpressionsService {
   }
 
   findOne(id: string) {
-    return this.prisma.adImpression.findUnique({ where: { id } });
+    return this.prisma.adImpression.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdateAdImpressionDto) {
     return this.prisma.adImpression.update({
-      where: { id },
+      where: { id: Number(id) },
       data: {
         ...data,
         ...(data.impressionAt
@@ -41,6 +41,6 @@ export class AdImpressionsService {
   }
 
   remove(id: string) {
-    return this.prisma.adImpression.delete({ where: { id } });
+    return this.prisma.adImpression.delete({ where: { id: Number(id) } });
   }
 }

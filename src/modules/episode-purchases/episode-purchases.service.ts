@@ -18,14 +18,14 @@ export class EpisodePurchasesService {
   }
 
   findOne(id: string) {
-    return this.prisma.episodePurchase.findUnique({ where: { id } });
+    return this.prisma.episodePurchase.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: string, data: UpdateEpisodePurchaseDto) {
-    return this.prisma.episodePurchase.update({ where: { id }, data });
+    return this.prisma.episodePurchase.update({ where: { id: Number(id) }, data });
   }
 
   remove(id: string) {
-    return this.prisma.episodePurchase.delete({ where: { id } });
+    return this.prisma.episodePurchase.delete({ where: { id: Number(id) } });
   }
 }
