@@ -156,3 +156,31 @@ sudo ln -s /etc/nginx/sites-available/movie-short /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 ```
+
+---
+
+## 5. Cấu hình kết nối DBeaver từ máy cá nhân
+
+Để kết nối DBeaver (máy cá nhân) tới MySQL trên EC2, thực hiện các bước sau:
+
+### Bước 1: Cho phép MySQL nhận kết nối bên ngoài
+1. Mở file cấu hình mysql: `sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf`
+2. Tìm dòng `bind-address = 127.0.0.1` và sửa thành `bind-address = 0.0.0.0`
+3. Restart MySQL: `sudo systemctl restart mysql`
+
+### Bước 2: Cấp quyền cho User Root truy cập từ xa
+1. Đăng nhập vào mysql: `mysql -u root -p` (Pass: 12345678)
+2. Chạy các lệnh SQL sau:
+```sql
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '12345678';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+### Bước 3: Cấu hình trên DBeaver
+- **Host:** 47.130.184.14
+- **Port:** 3306
+- **Database:** short_movie
+- **Username:** root
+- **Password:** 12345678
