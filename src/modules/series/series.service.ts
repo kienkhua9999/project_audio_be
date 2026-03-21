@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateSeriesDto } from './dto/create-series.dto';
@@ -6,17 +7,19 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class SeriesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
-  getHomeSlider() {
-    return this.prisma.series.findMany({
+  async getHomeSlider(): Promise<any> {
+    const series = await this.prisma.series.findMany({
       take: 6,
       orderBy: { createdAt: 'desc' },
       where: { status: 'published' },
     });
+    console.log('Slider series count:', series.length);
+    return series.map((s) => this.formatSeries(s));
   }
 
-  async getHomeSections() {
+  async getHomeSections(): Promise<any> {
     const latestSeries = await this.prisma.series.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
@@ -35,31 +38,37 @@ export class SeriesService {
       where: { status: 'published' },
     });
 
+    console.log('Sections items count:', {
+      latest: latestSeries.length,
+      exclusive: exclusiveSeries.length,
+      shuffled: shuffledSeries.length,
+    });
+
     return [
       {
         sectionName: 'Phim ngắn hot',
-        items: latestSeries,
+        items: latestSeries.map((s) => this.formatSeries(s)),
       },
       {
         sectionName: 'Phim bộ mới cập nhật',
-        items: exclusiveSeries.length > 0 ? exclusiveSeries : shuffledSeries,
-      },
-      {
-        sectionName: 'Phim lồng tiếng',
-        items: shuffledSeries,
-      },
-      {
-        sectionName: 'Phim tình cảm',
-        items: latestSeries,
+        items: (shuffledSeries.length > 0
+          ? shuffledSeries
+          : exclusiveSeries
+        ).map((s) => this.formatSeries(s)),
       },
     ];
   }
 
-  create(data: CreateSeriesDto) {
-    return this.prisma.series.create({ data });
+  async create(data: CreateSeriesDto) {
+    const series = await this.prisma.series.create({ data });
+    return this.formatSeries(series);
   }
 
-  async findAll(type?: string, page: number = 1, limit: number = 20) {
+  async findAll(
+    type?: string,
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<any> {
     const where: Prisma.SeriesWhereInput = {};
     if (type) {
       where.type = type;
@@ -78,7 +87,7 @@ export class SeriesService {
     ]);
 
     return {
-      items,
+      items: items.map((s) => this.formatSeries(s)),
       meta: {
         total,
         page,
@@ -88,9 +97,15 @@ export class SeriesService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<any> {
+    const numericId = Number(id);
+    if (isNaN(numericId)) {
+      console.warn('Invalid series ID received:', id);
+      return null;
+    }
+
     const series = await this.prisma.series.findUnique({
-      where: { id: Number(id) },
+      where: { id: numericId },
       include: {
         episodes: {
           select: {
@@ -110,15 +125,52 @@ export class SeriesService {
 
     if (!series) return null;
 
+    return this.formatSeries(series);
+  }
+
+  private formatEpisode(episode: any, seriesTitle: string): any {
+    if (!episode) return null;
     return {
-      ...series,
-      tags: series.tags ? series.tags.split(',') : [],
-      totalEpisodes: series.episodes.length,
+      ...episode,
+      videoUrl: episode.videoUrl
+        ? `https://${process.env.BUCKET}.s3.amazonaws.com/${encodeURIComponent(seriesTitle)}/${encodeURIComponent(episode.videoUrl)}`
+        : null,
+      thumbnailUrl: episode.thumbnailUrl
+        ? `https://${process.env.BUCKET}.s3.amazonaws.com/${encodeURIComponent(seriesTitle)}/${encodeURIComponent(episode.thumbnailUrl)}`
+        : null,
     };
   }
 
-  update(id: string, data: UpdateSeriesDto) {
-    return this.prisma.series.update({ where: { id: Number(id) }, data });
+  private formatSeries(series: any): any {
+    if (!series) return null;
+    const formatted = {
+      ...series,
+      image: series.image
+        ? `https://${process.env.BUCKET}.s3.amazonaws.com/${encodeURIComponent(series.title)}/${encodeURIComponent(series.image)}`
+        : null,
+      tags:
+        series.tags && typeof series.tags === 'string'
+          ? (series.tags as string).split(',')
+          : series.tags || [],
+      views:
+        series.views > 0
+          ? series.views
+          : Math.floor(Math.random() * 50000) + 1000,
+      totalEpisodes: series.episodes ? series.episodes.length : undefined,
+      episodes: series.episodes
+        ? series.episodes.map((ep) => this.formatEpisode(ep, series.title))
+        : undefined,
+    };
+
+    return formatted;
+  }
+
+  async update(id: string, data: UpdateSeriesDto) {
+    const series = await this.prisma.series.update({
+      where: { id: Number(id) },
+      data,
+    });
+    return this.formatSeries(series);
   }
 
   remove(id: string) {

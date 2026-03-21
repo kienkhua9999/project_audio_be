@@ -49,7 +49,7 @@ model Episode {
   title            String
   videoUrl         String
   thumbnailUrl     String?
-  duration         Int
+  duration         String?
   status           String
   isExclusive      Boolean?
   hasAds           Boolean?

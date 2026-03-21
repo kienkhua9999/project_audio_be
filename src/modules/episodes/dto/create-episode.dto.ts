@@ -3,7 +3,7 @@ export class CreateEpisodeDto {
   episodeNumber: number;
   title: string;
   videoUrl: string;
-  duration: number;
+  duration: string;
   status: string;
   isExclusive?: boolean;
   hasAds?: boolean;
