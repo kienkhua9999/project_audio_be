@@ -64,7 +64,7 @@ async function importSeries() {
           title: seriesFolderName,
           description: `Phim ${seriesFolderName}`,
           image: imageFile || null,
-          status: 'active',
+          status: 'published',
           isExclusive: false,
           hasAds: true,
         },
