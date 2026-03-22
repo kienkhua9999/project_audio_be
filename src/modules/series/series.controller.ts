@@ -26,6 +26,13 @@ export class SeriesController {
     return this.seriesService.getHomeSections();
   }
 
+  @Get('news')
+  getNews(@Query('page') page?: string, @Query('limit') limit?: string) {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    const limitNumber = limit ? parseInt(limit, 10) : 10;
+    return this.seriesService.getNews(pageNumber, limitNumber);
+  }
+
   @Post()
   create(@Body() dto: CreateSeriesDto) {
     return this.seriesService.create(dto);
@@ -50,6 +57,11 @@ export class SeriesController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateSeriesDto) {
     return this.seriesService.update(id, dto);
+  }
+
+  @Patch(':id/view')
+  updateView(@Param('id') id: string) {
+    return this.seriesService.updateView(id);
   }
 
   @Delete(':id')

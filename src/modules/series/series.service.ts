@@ -86,8 +86,11 @@ export class SeriesService {
       this.prisma.series.count({ where }),
     ]);
 
+    const formattedItems = items.map((s) => this.formatSeries(s));
+    this.shuffleArray(formattedItems);
+
     return {
-      items: items.map((s) => this.formatSeries(s)),
+      items: formattedItems,
       meta: {
         total,
         page,
@@ -128,6 +131,42 @@ export class SeriesService {
     return this.formatSeries(series);
   }
 
+  async getNews(page: number = 1, limit: number = 10): Promise<any> {
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      this.prisma.series.findMany({
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          image: true,
+          views: true,
+        },
+        where: { status: 'published' },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.series.count({
+        where: { status: 'published' },
+      }),
+    ]);
+
+    const formattedItems = items.map((s) => this.formatSeries(s));
+    this.shuffleArray(formattedItems);
+
+    return {
+      items: formattedItems,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+
   private formatEpisode(episode: any, seriesTitle: string): any {
     if (!episode) return null;
     return {
@@ -165,12 +204,34 @@ export class SeriesService {
     return formatted;
   }
 
+  private shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
   async update(id: string, data: UpdateSeriesDto) {
     const series = await this.prisma.series.update({
       where: { id: Number(id) },
       data,
     });
     return this.formatSeries(series);
+  }
+
+  async updateView(id: string): Promise<any> {
+    const numericId = Number(id);
+    if (isNaN(numericId)) return null;
+
+    await this.prisma.series.update({
+      where: { id: numericId },
+      data: {
+        views: { increment: 1 },
+      },
+    });
+
+    return true;
   }
 
   remove(id: string) {

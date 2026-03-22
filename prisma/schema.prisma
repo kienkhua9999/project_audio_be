@@ -27,7 +27,7 @@ model User {
 model Series {
   id          Int       @id @default(autoincrement())
   title       String
-  description String?
+  description String?   @db.LongText
   image       String?
   tags        String?
   type        String?
