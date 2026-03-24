@@ -66,6 +66,7 @@ export class SeriesService {
 
   async findAll(
     type?: string,
+    search?: string,
     page: number = 1,
     limit: number = 20,
   ): Promise<any> {
@@ -73,6 +74,12 @@ export class SeriesService {
     if (type) {
       where.type = type;
     }
+
+    if (search) {
+      where.title = { contains: search };
+    }
+
+    console.log('Series where:', where);
 
     const skip = (page - 1) * limit;
 

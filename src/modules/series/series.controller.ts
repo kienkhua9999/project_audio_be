@@ -41,12 +41,13 @@ export class SeriesController {
   @Get()
   findAll(
     @Query('type') type?: string,
+    @Query('search') search?: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ) {
     const pageNumber = page ? parseInt(page, 10) : 1;
     const limitNumber = limit ? parseInt(limit, 10) : 20;
-    return this.seriesService.findAll(type, pageNumber, limitNumber);
+    return this.seriesService.findAll(type, search, pageNumber, limitNumber);
   }
 
   @Get(':id')
