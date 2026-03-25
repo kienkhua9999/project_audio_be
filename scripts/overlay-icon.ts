@@ -17,9 +17,9 @@ if (!inputDir || !watermarkIcon) {
 }
 
 // Cấu hình vị trí và kích thước icon
-const ICON_WIDTH = 300; // Chiều rộng icon
-const MARGIN_RIGHT = -40; // Số âm để đẩy icon sang bên TRÁI hoặc PHẢI thêm (có thể âm để đẩy sát lề hơn)
-const MARGIN_TOP = -40; // Số âm để đẩy icon LÊN TRÊN cao hơn
+const ICON_WIDTH = 320; // Chiều rộng icon
+const MARGIN_RIGHT = -50; // Số âm để đẩy icon sang bên TRÁI hoặc PHẢI thêm (có thể âm để đẩy sát lề hơn)
+const MARGIN_TOP = -50; // Số âm để đẩy icon LÊN TRÊN cao hơn
 
 // Các định dạng video được hỗ trợ
 const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
@@ -29,7 +29,7 @@ const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.webm'];
  */
 function getAllVideos(dir: string, fileList: string[] = []): string[] {
   const files = fs.readdirSync(dir);
-  
+
   for (const file of files) {
     const filePath = path.join(dir, file);
     if (fs.statSync(filePath).isDirectory()) {
@@ -61,7 +61,7 @@ function processVideo(inputFile: string, outputFile: string): Promise<void> {
     ];
 
     console.log(`⏳ Đang xử lý: ${path.basename(inputFile)}...`);
-    
+
     // Sử dụng execFile thay cho exec để tránh lỗi parse path có dấu cách của Windows cmd
     const childProcess = require('child_process').execFile(ffmpegPath, args);
 
@@ -93,13 +93,13 @@ async function main() {
     }
 
     console.log(`Tìm thấy ${allVideos.length} video. Bắt đầu xử lý...`);
-    
+
     // Xử lý lần lượt từng video
     for (const inputFile of allVideos) {
       // Tính toán đường dẫn file đích (giữ nguyên cấu trúc thư mục con)
       const relativePath = path.relative(inputDir, inputFile);
-      const outputFile = path.join(outputDir, relativePath); 
-      
+      const outputFile = path.join(outputDir, relativePath);
+
       // Bỏ qua các file đang được cập nhật/ghi bởi process-mobile-videos (sửa đổi trong 2 phút gần đây)
       const stat = fs.statSync(inputFile);
       const isFileBeingWritten = (Date.now() - stat.mtimeMs) < 2 * 60 * 1000;
