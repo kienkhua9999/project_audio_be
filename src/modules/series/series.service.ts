@@ -11,50 +11,56 @@ export class SeriesService {
 
   async getHomeSlider(): Promise<any> {
     const series = await this.prisma.series.findMany({
-      take: 6,
+      take: 10,
       orderBy: { createdAt: 'desc' },
       where: { status: 'published' },
     });
     console.log('Slider series count:', series.length);
-    return series.map((s) => this.formatSeries(s));
+    const formatted = series.map((s) => this.formatSeries(s));
+    this.shuffleArray(formatted);
+    return formatted.slice(0, 6);
   }
 
   async getHomeSections(): Promise<any> {
     const latestSeries = await this.prisma.series.findMany({
-      take: 10,
-      orderBy: { createdAt: 'desc' },
+      take: 15,
       where: { status: 'published' },
     });
 
-    const exclusiveSeries = await this.prisma.series.findMany({
-      where: { isExclusive: true, status: 'published' },
-      take: 10,
+    const phimngontinh = await this.prisma.series.findMany({
+      where: { type: { in: ['ngon-tinh', 'co-trang'] } },
+      take: 30,
+      orderBy: { createdAt: 'asc' },
+    });
+
+    const phimtutienhethong = await this.prisma.series.findMany({
+      take: 30,
       orderBy: { createdAt: 'desc' },
+      where: { type: 'tu-tien-he-thong' },
     });
 
-    const shuffledSeries = await this.prisma.series.findMany({
-      take: 10,
-      orderBy: { title: 'asc' },
-      where: { status: 'published' },
-    });
+    const latestFormatted = latestSeries.map((s) => this.formatSeries(s));
+    const ngontinhFormatted = phimngontinh.map((s) => this.formatSeries(s));
+    const tutienhethongFormatted = phimtutienhethong.map((s) =>
+      this.formatSeries(s),
+    );
 
-    console.log('Sections items count:', {
-      latest: latestSeries.length,
-      exclusive: exclusiveSeries.length,
-      shuffled: shuffledSeries.length,
-    });
+    this.shuffleArray(latestFormatted);
+    this.shuffleArray(ngontinhFormatted);
+    this.shuffleArray(tutienhethongFormatted);
 
     return [
       {
-        sectionName: 'Phim ngắn hot',
-        items: latestSeries.map((s) => this.formatSeries(s)),
+        sectionName: 'Phim Mới Hot',
+        items: latestFormatted.slice(0, 15),
       },
       {
-        sectionName: 'Phim bộ mới cập nhật',
-        items: (shuffledSeries.length > 0
-          ? shuffledSeries
-          : exclusiveSeries
-        ).map((s) => this.formatSeries(s)),
+        sectionName: 'Phim Ngôn Tình - Cổ Trang',
+        items: ngontinhFormatted.slice(0, 15),
+      },
+      {
+        sectionName: 'Phim Tu Tiên Hệ Thống',
+        items: tutienhethongFormatted.slice(0, 15),
       },
     ];
   }
