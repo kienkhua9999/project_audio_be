@@ -20,7 +20,7 @@ export class MovieShortS3Stack extends MovieShortStack {
 
     const bucketName =
       process.env.AWS_BUCKET ||
-      `movie-short-bucket-${props.envName.toLowerCase()}`;
+      `movie-short-bucket-new-${props.envName.toLowerCase()}`;
 
     this.bucket = new s3.Bucket(this, `MovieShortBucket${props.envName}`, {
       bucketName: bucketName,
